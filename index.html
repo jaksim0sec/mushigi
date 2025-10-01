@@ -1,0 +1,1426 @@
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="" />
+  <link href="https://fonts.googleapis.com/css2?family=Do+Hyeon&amp;family=Noto+Sans+KR:wght@600&amp;display=swap" rel="stylesheet"/>
+
+  <!--[Css]-->
+  <!--기본레이아웃-->
+  <style>
+    /*고유정의*/
+    body {
+      width: 100vw;
+      height: 100vh;
+      margin: 0px;
+      padding: 0px;
+      background-color: black;
+      overflow: hidden;
+      font-family: 'Do Hyeon', serif;
+    }
+
+    #world {
+      width: 100%;
+      height: 100%;
+      margin: 0px;
+      padding: 0px;
+      background-color: black;
+      overflow: hidden;
+      position: absolute;
+      left: 50%;
+      bottom: 50%;
+      transform: translate(-50%, 50%);
+      animation: horror 30s linear infinite;
+    }
+
+    #mover {
+      transition: left 0s linear;
+      background: linear-gradient(180deg, #000000, #ffffff10);
+    }
+
+    #ground {
+      background: linear-gradient(180deg, #6f6f6f, #383634);
+      filter: contrast(1.2) brightness(0.9);
+    }
+
+    .window {
+      background: linear-gradient(0deg, #000000cc, #00000050);
+      border-radius: 5px;
+      outline: 4.5px solid #00000080;
+      border: 1.5px solid #ffffff90;
+      transition: all 0.5s ease;
+    }
+
+    /*하위특수정의*/
+    #mainMenu {
+      width: 300px;
+      height: 150px;
+      left: 20px;
+      top: 50px;
+    }
+
+    #lowerStatus {
+      width: 70vw;
+      height: 70px;
+      left: 50%;
+      bottom: 70px;
+      transform: translateX(-50%);
+      border-radius: 10px;
+    }
+
+    #inventory {
+      width: 80vw;
+      height: 90vh;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: linear-gradient(0deg, #000000cc, #00000010);
+    }
+
+    #inventoryCover {
+      width: 100vw;
+      height: 100vh;
+      background: #00000090;
+      position: absolute;
+      backdrop-filter: blur(4px);
+      transition: all 0.5s ease;
+    }
+
+    #inventory .card {
+      font-family: 'Noto Sans KR', serif;
+    }
+
+    #inventory hr {
+      height: 0px;
+      border: 0.5px solid white;
+    }
+
+    .window button {
+      transition: all 0.2s ease;
+      color: white;
+      font-family: 'Noto Sans KR', serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 0px;
+      width: 50px;
+      height: 30px;
+      line-height: 4px;
+    }
+
+    .window button:hover {
+      filter: brightness(2);
+      transform: scale(1.02);
+    }
+
+    .window button:active {
+      transform: scale(0.95);
+    }
+
+    .hoverer:hover {
+      color: white;
+      background-color: #ffffff30;
+      padding: 5px;
+      border-radius: 20px;
+      transition: all 1s ease;
+    }
+
+    .window .bigbutton {
+      width: 160px;
+      height: 52px;
+      border-radius: 20px;
+      color: #ffffffcc;
+      font-size: 16px;
+    }
+
+    .tag {
+      margin-right: 10px;
+      margin-left: 10px;
+    }
+
+    /*개별태그정의*/
+    /*progress */
+    progress {
+      -webkit-appearance: none;
+      appearance: none;
+      border: 1.5px solid transparent;
+      border-radius: 5px;
+      opacity: 0.5;
+      transition: all 1s ease;
+    }
+
+        /* > WebKit 바 공통 (배경 + 값) */
+        progress::-webkit-progress-bar,
+        progress::-webkit-progress-value {
+          border-radius: 8px;
+          transition: all 2s ease;
+        }
+
+        /* > .obj 컨테이너 내부 progress */
+        .obj progress {
+          position: absolute;
+          left: 50%;
+          transform: translateX(-50%);
+          width: 90%;
+          max-width: 90px;
+          height: 11px;
+          opacity: 0;
+          outline: 2.5px solid #00000099;
+          transition: opacity 0.5s ease;
+        }
+
+        /* > MANA bar */
+        .MANAbar {
+          top: -40px;
+          border-color: #5754ff;
+        }
+        /* >> MANA WebKit 바 배경 */
+        .MANAbar::-webkit-progress-bar {
+          background-color: #1b1384;
+        }
+        /* >> MANA WebKit 값 */
+        .MANAbar::-webkit-progress-value {
+          background: #6a68ffcc;
+        }
+
+        /* > HP bar */
+        .HPbar {
+          top: -57px;
+          border-color: #ff4848;
+        }
+        /* >> HP WebKit 바 배경 */
+        .HPbar::-webkit-progress-bar {
+          background-color: #841313;
+        }
+        /* >> HP WebKit 값 */
+        .HPbar::-webkit-progress-value {
+          background: #fb7a68cc;
+        }
+
+        /* > 전용 bar (#meMana, #meHp) */
+        #meMana,
+        #meHp {
+          position: static;
+          transform: none;
+          max-width: 180px;
+          height: 12px;
+          opacity: 0.7;
+          background-color: #ffffff05;
+          border: none;
+        }
+        /* >> WebKit 바 배경 */
+        #meMana::-webkit-progress-bar,
+        #meHp::-webkit-progress-bar {
+          background-color: transparent;
+        }
+        /* >> WebKit 값 */
+        #meMana::-webkit-progress-value,
+        #meHp::-webkit-progress-value {
+          background: linear-gradient(270deg, #ffffff90, white, #ffffff60);
+          background-color: transparent;
+        }
+
+  </style>
+
+  <!--용어-->
+  <style>
+    /*실질*/
+    .obj {
+      position: absolute;
+      transition: all 1s ease;
+    }
+
+
+    /*형식*/
+    .신화 {
+      font-weight: bold;
+      background: linear-gradient(90deg, #ff6a00, #ee0979);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+  </style>
+
+  <!--오브젝트-->
+  <style>
+    /*요소정의*/
+    /*>weap*/
+    .weap {
+      width: 7.5px;
+      height: 145px;
+      left: 50%;
+      transition: all 0.5s ease;
+      border: 2px solid black;
+      border-radius: 0 20px 0 0;
+      background: linear-gradient(180deg, #6f6f6f, #6a371e);
+      z-index: 2;
+    }
+
+    .weap div {
+      width: 13px;
+      height: 15.5px;
+      background-color: white;
+      border-radius: 50% 20% 50% 20%;
+      position: absolute;
+      border: 1.5px solid black;
+    }
+        /*>>weap - hand*/
+        .weap #o1 {
+          bottom: 1px;
+          width: 6px;
+          right: 6px;
+          border-radius: 50% 10% 50% 50%;
+          z-index: 1;
+        }
+
+        .weap #o2 {
+          bottom: 22px;
+          left: 1px;
+          z-index: 3;
+        }
+
+        .weap #o3 {
+          bottom: 7px;
+          width: 10px;
+          border-radius: 50% 20% 50% 20%;
+          height: 6px;
+          left: 2px;
+          z-index: 1;
+          transform: rotate(45deg);
+        }
+        .weap #o4 {
+          bottom: 30px;
+          width: 6px;
+          border-radius: 50% 20% 50% 20%;
+          height: 8px;
+          right: 6px;
+          z-index: 1;
+          transform: rotate(-20deg);
+        }
+    /*weap-end*/
+
+
+    /*플레이어정의*/
+    /*>>me*/
+    #me {
+      position: absolute;
+      bottom: 210px;
+      left: 50%;
+      transition: left 0.1s ease;
+      transform: translateX(-50%);
+    }
+
+    .range {
+      width: 170px;
+      height: 170px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .player {
+      width: 170px;
+      height: 170px;
+      border: 1px solid #00000050;
+      border-radius: 10px;
+      background-color: white;
+      transition: none;
+    }
+
+
+    /*개별정의*/
+    /*css변수정의*/
+    #meShow img {
+      --scaleX: 1;
+    }
+
+  </style>
+
+  <!--애니메이션-->
+  <style>
+    /*적용*/
+    #mover div img {
+      animation: backgroundS 5s ease infinite;
+    }
+
+
+
+    /*정의*/
+    @keyframes backgroundS {
+      0% {
+      }
+      1% {
+        background: #ffffff50;
+      }
+      15% {
+        background: transparent;
+      }
+      49% {
+        background: transparent;
+      }
+      50% {
+        background: #ffffff50;
+      }
+      57% {
+        background: transparent;
+      }
+    }
+
+    @keyframes horror {
+      0% {
+      }
+      1% {
+        filter: brightness(0.5) contrast(1.5);
+      }
+      2% {
+        filter: brightness(1) contrast(1.1);
+      }
+      4% {
+        filter: brightness(0.5) contrast(1.5);
+      }
+      5% {
+        filter: brightness(1) contrast(1.1);
+      }
+    }
+
+    @keyframes B {
+      0% {
+        transform: translate(-50%, 50%) scaleY(1);
+      }
+      50% {
+        transform: translate(-50%, 50%) scaleY(0.7);
+      }
+      100% {
+        transform: translate(-50%, 50%) scaleY(1);
+      }
+    }
+
+    @keyframes J {
+      0% {
+        transform: scale(1) scaleY(1) translateY(0);
+      }
+      25% {
+        transform: scale(0.9) scaleY(1.4) translateY(-7px);
+      }
+      75% {
+        transform: scale(1.1) scaleY(0.8) translateY(5px);
+      }
+      100% {
+        transform: scale(1) scaleY(1) translateY(0);
+      }
+    }
+
+    @keyframes smallJ {
+      0% {
+        transform: scale(1) scaleY(1) translateY(0) scaleX(var(--scaleX));
+      }
+      25% {
+        transform: scaleX(0.95) scaleY(1.2) translateY(-10px)
+          scaleX(var(--scaleX));
+      }
+      75% {
+        transform: scale(1.05) scaleY(0.9) translateY(6px) scaleX(var(--scaleX));
+      }
+      100% {
+        transform: scale(1) scaleY(1) translateY(0) scaleX(var(--scaleX));
+      }
+    }
+
+    @keyframes alive {
+      0% {
+        transform: scale(1) scaleY(1) translateY(0) scaleX(var(--scaleX));
+      }
+      40% {
+        transform: scaleY(1.05) translateY(-2.7px) scaleX(var(--scaleX));
+      }
+      80% {
+        transform: scale(1) scaleY(0.98) translateY(0) scaleX(var(--scaleX));
+      }
+      100% {
+        transform: scale(1) scaleY(1) translateY(0) scaleX(var(--scaleX));
+      }
+    }
+  </style>
+
+  <!--효과-->
+  <style>
+    /*정적*/
+    .Backblur {
+      width: 100vw;
+      height: 20px;
+      box-shadow: 0px 0px 40px #000000, 0px 0px 40px #000000;
+      background-color: black;
+      position: absolute;
+    }
+
+    /*동적*/
+    .불꽃 {
+      width: 10px;
+      height: 10px;
+      background-color: #ffca8c;
+      animation: 불꽃 1s ease forwards;
+      position: absolute;
+      z-index: 0;
+      border-radius: 2.5px;
+      transition: all 0.1s linear;
+    }
+
+    .불똥 {
+      width: 2px;
+      height: 10px;
+      border-radius: 5px;
+      border: 1px solid #FF7D4150;
+      background: linear-gradient(180deg, #ff6f28, #ffdca1);
+      animation: 불똥 0.5s ease;
+
+    }
+
+    .딜량 {
+      font-size: 30px;
+      font-weight: bold;
+      animation: 딜량 1s ease forwards;
+      animation-delay: 0.1s;
+      background: linear-gradient(180deg, white, darkgrey);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: absolute;
+    }
+
+    .딜량 {
+      font-size: 30px;
+      font-weight: bold;
+      animation: 딜량 1s ease forwards;
+      animation-delay: 0.1s;
+      background: linear-gradient(180deg, white, darkgrey);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      position: absolute;
+    }
+
+    @keyframes 불꽃 {
+      0% {
+        transform: scale(1) rotate(0deg);
+      }
+      100% {
+        transform: scale(0) rotate(90deg);
+      }
+    }
+
+    @keyframes 불똥 {
+      0% {
+        filter: brightness(2);
+      }
+      100% {
+        opacity: 0;
+      }
+    }
+
+    @keyframes 딜량 {
+      0% {
+      }
+      100% {
+        transform: translate(0, -15px) scale(0.9);
+        opacity: 0;
+      }
+    }
+
+    @keyframes 죽음l {
+      0%{}
+      100%{
+        transform: translate(-120px,25px) rotate(-90deg)
+      }
+    }
+    @keyframes 죽음r {
+      0%{}
+      100%{
+        transform: translate(120px,25px) rotate(90deg)
+      }
+    }
+  </style>
+
+</head>
+
+<!--[HTML]-->
+<!--인게임-->
+<body>
+  <div id="world">
+    <div id="ground" style="width: 100%; position: absolute; bottom: 0px; height: 250px;">
+      <div id="mover" style="height: 55vh; position: absolute; left: 200px; bottom: 250px;">
+        
+        <!-- 뒷배경 -->
+        <div style="height: 100%; display: flex;">
+          <img src="https://ifh.cc/g/vnjDwH.png" style="height: 100%;" />
+          <img src="https://ifh.cc/g/vnjDwH.png" style="height: 100%; animation-delay: 0.1s;" />
+          <img src="https://ifh.cc/g/vnjDwH.png" style="height: 100%; animation-delay: 0.25s;" />
+          <img src="https://ifh.cc/g/vnjDwH.png" style="height: 100%; animation-delay: 0.4s;" />
+        </div>
+
+        <!-- 뒷배경 그라데이션 -->
+        <div style="width: 100%; height: 30vh; position: absolute; background: linear-gradient(0deg, #c3c3c3, #ececec); top: -30vh;"></div>
+
+        <!-- 뒷배경 종료기 -->
+        <div class="obj" style="height: 100vh; background-color: #00000000; width: 100%; bottom: 0px; box-shadow: inset 0px 0px 60px #000000, inset 0px 0px 60px #000000, inset 0px 0px 60px #000000, inset 0px 0px 60px #000000;"></div>
+
+        <!-- onground -->
+        <div id="onground" class="obj" style="width: 100%; height: 100%; bottom: -30px;">
+          
+          <!-- 테스트용 오브젝트 1 -->
+          <div id="test1" class="obj enemy" style="background-color: grey; width: 100px; height: 150px; bottom: 0px; left: 400px; border-radius: 10px;border:1px solid black;">
+            <progress id="test1Mana" class="obj MANAbar" value="40" max="100"></progress>
+            <progress id="test1HP" class="obj HPbar" value="40" max="100"></progress>
+            테스트용 물체1
+          </div>
+
+          <!-- 테스트용 오브젝트 2 -->
+          <div id="test2" class="obj enemy" style="background-color: grey; width: 100px; height: 150px; bottom: 0px; left: 200px; border-radius: 10px;border:1px solid black;">
+            <progress id="test2Mana" class="MANAbar obj" value="40" max="100"></progress>
+            <progress id="test2HP" class="HPbar obj" value="40" max="100"></progress>
+            테스트용 물체2
+          </div>
+
+          <div id="test3" class="obj enemy" style="background-color: grey; width: 100px; height: 150px; bottom: 0px; left: 200px; border-radius: 10px;border:1px solid black;">
+            <progress id="test3Mana" class="MANAbar obj" value="40" max="100"></progress>
+            <progress id="test3HP" class="HPbar obj" value="40" max="100"></progress>
+            테스트용 물체3
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+    <!--me-->
+    <div id="me" class="obj range">
+      <div id="meShow" class="obj" style="justify-content: center; width: 200px; display: flex;">
+        <div id="meWeap" class="obj weap">
+          <div id="o1"></div>
+          <div id="o2"></div>
+          <div id="o3"></div>
+          <div id="o4"></div>
+        </div>
+
+        <img src="https://ifh.cc/g/60O0tV.png" style="height: 160px; animation: alive 5s ease infinite; transition: transform 0.5s ease;" />
+      </div>
+    </div>
+
+  </div>
+</body>
+
+<!--아웃시스템-->
+<div class="window obj" id="mainMenu" style = "color: #FFFFFFBB;font-weight:bolder;padding: 10px;font-size:18px;">
+  <div style = 'position:relative; height: 100%; width: 100%;'>
+  ▶ 체력
+  <div style = 'width: 100%; height: 2px;'></div>
+  <progress id="meHP" class="HPbar obj" value="40" max="100"></progress>
+  <div style = 'width: 100%; height: 15px;'></div>
+  ▶ 마나
+  <div style = 'width: 100%; height: 2px;'></div>
+  <progress id="meMana" class="MANAbar obj" value="40" max="100"></progress>
+  <button class='window' style = 'padding: 13px; font-size: 16px; width: auto;background: linear-gradient(180deg, #ffffff50, #ffffff15);position:absolute;bottom:0px;'onclick = 'toggleShow("#inventoryCover")'>인벤토리</button>
+</div></div>
+<div class="window obj" id="lowerStatus"></div>
+
+<div class="Backblur" id="o2"></div>
+<div class="Backblur" id="o1" style="height: 40px; bottom: 0px"></div>
+
+<div id="inventoryCover">
+  <div class="window obj" id="inventory" style="position: relative">
+    <div class="obj hoverer" style="font-size: 60px; color: #ffffffcc; top: 50%; transform: translate(0, -50%); left: 20px;" onclick="inventoryMove(-1)">◀</div>
+    <div class="obj hoverer" style="font-size: 60px; color: #ffffffcc; top: 50%; transform: translate(0, -50%); right: 20px;" onclick="inventoryMove(1)">▶</div>
+    <button class="window obj" style="top: 10px; right: 30px">열기</button>
+    <button class="window obj" style="top: 10px; right: 95px" onclick='toggleShow("#inventoryCover")'>닫기</button>
+    <div style="width: 100%; display: flex; justify-content: center; color: white; font-size: 30px; margin-top: 35px;">
+      <hr style="width: 40%" />소유물<hr style="width: 40%" />
+    </div>
+    <div style="width: 100%; display: flex; justify-content: center; color: white; font-size: 40px; margin-top: 35px;" id = 'inventory_name'>▶ 살벌한 단소 ◀</div>
+    <div style="width: 100%; display: flex; justify-content: center; color: #ffffff90; font-size: 20px; margin-top: 5px;">
+      <span class="신화 tag" id='inventory_tag'>[신화 등급]</span>
+      <div id=inventory_type>⋅ 양손무기</div>
+    </div>
+    <div style="width: 100%; height: 30%; display: flex; justify-content: center; margin-top: 20px;">
+      <img src="" id = 'inventory_img' style="height: 100%; border: 0.1px solid #ffffff50; background:#00000080; max-width: 30%; border-radius: 10px;" />
+    </div>
+    <div style="width: 100%; display: flex; justify-content: center; color: #ffffff99; font-size: 15px; margin-top: 35px;" id="inventory_about1">
+      지하철 바닥에 굴러다니는 수상한 단소.
+    </div>
+    <div style="width: 100%; display: flex; justify-content: center; color: #ffffff99; font-size: 15px; margin-top: 5px;" id="inventory_about2">
+      윗부분이 살짝 찌그러져있다.
+    </div>
+    <div style="width: 100%; display: flex; justify-content: center; color: #ffffff99; font-size: 15px; margin-top: 5px; gap: 20px; position: absolute; bottom: 5%;">
+      <button class="bigbutton" style="background: linear-gradient(180deg, #ffffff20, #ffffff05)">상세정보 보기</button>
+      <button class="bigbutton" style="background: linear-gradient(180deg, #ffffff50, #ffffff15)">아이템 사용하기</button>
+    </div>
+  </div>
+</div>
+
+
+
+<!--[JavaScript]-->
+<!--기본블럭-->
+<script>
+  function isVal(i) {
+  try {
+    return typeof i !== "undefined" && i !== null;
+  } catch {
+    return false;
+  }
+}
+
+  function Eincludes(list, who) {
+    return list.some((key) => who.includes(key));
+  }
+
+  function toggleShow(n) {
+    let what = HTC(n, 'display') == 'none';
+    if (what) {
+      HTML(n).style.display = 'flex';
+      setTimeout(() => {
+        HTML(n).style.opacity = '1';
+      }, 500);
+    } else {
+      HTML(n).style.opacity = '0';
+      setTimeout(() => {
+        HTML(n).style.display = 'none';
+      }, 500);
+    }
+  }
+
+  function HTML(name) {
+    return document.querySelector(name);
+  }
+  function HTC(element, styleProperty) {
+    return window
+      .getComputedStyle(HTML(element))
+      .getPropertyValue(styleProperty);
+  }
+
+  function GBDR(name) {
+    return HTML(name).getBoundingClientRect();
+  }
+  function 랜덤(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+
+  function 토글(문자, 글자) {
+    let 대상 = 문자;
+    if (대상.includes(글자)) {
+      while (대상.includes(글자)) {
+        대상 = 대상.replace(글자, '');
+      }
+    } else {
+      대상 += 글자;
+    }
+    return 대상;
+  }
+
+  function 터치(대상일, 대상이) {
+    const 대상1 = HTML(대상일).getBoundingClientRect();
+    const 대상2 = HTML(대상이).getBoundingClientRect();
+
+    const 대상1중심 = {
+      x: 대상1.left + 대상1.width / 2,
+      y: 대상1.top + 대상1.height / 2,
+    };
+    const 대상2중심 = {
+      x: 대상2.left + 대상2.width / 2,
+      y: 대상2.top + 대상2.height / 2,
+    };
+
+    const 거리 = {
+      x: Math.abs(대상1중심.x - 대상2중심.x),
+      y: Math.abs(대상1중심.y - 대상2중심.y),
+    };
+
+    const 허용거리 = {
+      x: (대상1.width + 대상2.width) / 2,
+      y: (대상1.height + 대상2.height) / 2,
+    };
+
+    return 거리.x <= 허용거리.x && 거리.y <= 허용거리.y;
+  }
+  function 이동(대상, dx, dy) {
+    const 요소기록 = HTML(대상);
+    const world =
+      대상 == '#me' || 대상 == '#notMe' ? HTML('#ground') : HTML('#world');
+    const padding = 5;
+    const currentX = parseFloat(요소기록.style.left || 0);
+    const currentY = parseFloat(요소기록.style.bottom || 0);
+    const newX =
+      /*Math.max(
+  padding,
+  Math.min(
+    world.offsetWidth - 요소기록.offsetWidth - padding,
+    currentX + dx
+  )
+)*/ currentX + dx;
+    const newY =
+      /*Math.max(
+  padding,
+  Math.min(
+    world.offsetHeight - 요소기록.offsetHeight - padding,
+    currentY + dy
+  )
+)*/ currentY + dy;
+
+    순간이동(대상, newX, newY);
+  }
+
+  function 순간이동(대상, x, y) {
+    const 대상요소기록 = HTML(대상);
+    const 부모요소 = 대상요소기록.offsetParent || document.body;
+    const 부모너비 = 부모요소.offsetWidth;
+    const 부모높이 = 부모요소.offsetHeight;
+    const 요소기록위치 = 대상요소기록.style;
+    if (typeof x === 'string' && x.includes('%')) {
+      const percentX = parseFloat(x) / 100;
+      x = percentX * 부모너비;
+    }
+    if (typeof y === 'string' && y.includes('%')) {
+      const percentY = parseFloat(y) / 100;
+      y = percentY * 부모높이;
+    }
+    요소기록위치.left = `${x}px`;
+    요소기록위치.bottom = `${y}px`;
+  }
+
+  function 방향(대상, 목표) {
+    const 대상요소기록 = HTML(대상).getBoundingClientRect();
+    const 목표요소기록 = HTML(목표).getBoundingClientRect();
+    const 대상중심 = {
+      x: 대상요소기록.left + 대상요소기록.width / 2,
+      y: 대상요소기록.bottom + 대상요소기록.height / 2,
+    };
+    const 목표중심 = {
+      x: 목표요소기록.left + 목표요소기록.width / 2,
+      y: 목표요소기록.bottom + 목표요소기록.height / 2,
+    };
+    const dx = 목표중심.x - 대상중심.x;
+    const dy = 대상중심.y - 목표중심.y;
+    let angle = Math.atan2(dx, dy) * (180 / Math.PI);
+    return angle >= 0 ? angle : 360 + angle;
+  }
+
+  function 방향이동(대상, 각도, 크기) {
+    let 패딩 = 0;
+    const 대상요소기록 = HTML(대상);
+    const 대상위치 = 대상요소기록.getBoundingClientRect();
+    const 대상중심 = {
+      x: 대상위치.left + 대상위치.width / 2,
+      y: 대상위치.bottom,
+    };
+    const radian = 각도 * (Math.PI / 180);
+    const 이동량 = {
+      x: Math.sin(radian) * 크기,
+      y: Math.cos(radian) * 크기,
+    };
+    이동(대상, 이동량.x, 이동량.y, 패딩);
+  }
+
+  function 거리(대상1, 대상2) {
+    const 대상1위치 = HTML(대상1).getBoundingClientRect();
+    const 대상2위치 = HTML(대상2).getBoundingClientRect();
+    const 대상1중심 = {
+      x: 대상1위치.left + 대상1위치.width / 2,
+      y: 대상1위치.bottom + 대상1위치.height / 2,
+    };
+    const 대상2중심 = {
+      x: 대상2위치.left + 대상2위치.width / 2,
+      y: 대상2위치.bottom + 대상2위치.height / 2,
+    };
+    const dx = 대상2중심.x - 대상1중심.x;
+    const dy = 대상2중심.y - 대상1중심.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  function 회전(directive, angle) {
+    const target = document.querySelector(directive);
+
+    if (!target) {
+      console.error('대상을 찾을 수 없습니다:', directive);
+      return;
+    }
+    const existingTransform = target.style.transform || '';
+    const currentRotation = existingTransform.match(
+      /rotate\((-?\d+\.?\d*)deg\)/
+    );
+    let currentAngle = currentRotation ? parseFloat(currentRotation[1]) : 0;
+    const newAngle = currentAngle + angle;
+    target.style.transform = `${existingTransform.replace(
+      /rotate\(-?\d+\.?\d*deg\)/,
+      ''
+    )} rotate(${newAngle}deg)`;
+    target.style.transformOrigin = 'center';
+  }
+
+  function 점프(대상, 힘, 보정, 보정2) {
+    //if(정보[대상.replace('#','$')].체력<=0){return}
+    const 요소 = HTML(대상);
+    /*요소.style.transition = 'left 0.1s ease, bottom 0s linear';*/
+    const 최초위치1 = parseInt(HTC(대상, 'bottom'));
+    //const 최초위치2 = parseInt(HTC(대상,'left'));
+    let 물리 = 힘;
+    let 높이 = 0;
+    const 시행 = setInterval(() => {
+      이동(대상, 0, Number(물리.toFixed(2)) * 보정2);
+      높이 = 높이 + Number(물리.toFixed(2));
+      물리 -= 0.3;
+      if (물리 < -힘) {
+        clearInterval(시행);
+        순간이동(대상, parseInt(HTC(대상, 'left')), 최초위치1);
+        //setTimeout(()=>{
+        ///*요소.style.transition = 'all 0.2s ease';*/},20)
+      }
+    }, 20);
+  }
+
+  function time() {
+    const d = new Date();
+    const y = d.getFullYear();
+    const m = d.getMonth() + 1;
+    const day = d.getDate();
+    const h = d.getHours();
+    const min = d.getMinutes();
+    const s = d.getSeconds();
+
+    return Number(
+      `${y}${String(m).padStart(2, '0')}${String(day).padStart(2, '0')}${String(
+        h
+      ).padStart(2, '0')}${String(min).padStart(2, '0')}${String(s).padStart(
+        2,
+        '0'
+      )}`
+    );
+  }
+</script>
+
+<!--기본정의-->
+<script>
+  const obj = {
+    me: HTML('#me'),
+    world: HTML('#world'),
+    ground: HTML('#ground'),
+    enemy: {
+      test1: HTML('#test1'),
+      test2: HTML('#test2'),
+      test3: HTML('#test3')
+    },
+  };
+  const objI = {
+    me: {
+      mana: 100,
+      hp: 100,
+      speed: 10,
+      ap: 30,
+      move: { x: -1, y: 0 },
+      dir: -1,
+    },
+    test1: {
+      mana: 100,
+      hp: 100,
+      speed: 0,
+      ap: 10,
+      move: { x: 0, y: 0 },
+      dir: null,
+    },
+    test2: {
+      mana: 100,
+      hp: 100,
+      speed: 0,
+      ap: 10,
+      move: { x: 0, y: 0 },
+      dir: null,
+    },
+    test3: {
+      mana: 100,
+      hp: 100,
+      speed: 0,
+      ap: 10,
+      move: { x: 0, y: 0 },
+      dir: null,
+    },
+  };
+  const waiter = { me: { jump: false, attack: false, speed: false } };
+  const objInterval = { me: { move: null } };
+
+  const img = {
+    playerMove: [
+      'https://ifh.cc/g/c7MQhg.png',
+      'https://ifh.cc/g/HjwfGo.png',
+      'https://ifh.cc/g/c7MQhg.png',
+      'https://ifh.cc/g/60O0tV.png',
+      'https://ifh.cc/g/52rYhs.png',
+      'https://ifh.cc/g/BsFXrh.png',
+      'https://ifh.cc/g/52rYhs.png',
+      'https://ifh.cc/g/60O0tV.png',
+    ],
+
+    //https://ifh.cc/g/skqsQV.png https://ifh.cc/g/o95Nsp.png
+  };
+
+  //초기 css 정의
+  //무기 스타일 동기화
+  HTML('#meWeap').style.transform =
+    'translate(-70px,-20px) rotate(-50deg) scaleX(-1)';
+</script>
+
+<!--입력관리-->
+<script>
+  let 이동값 = objI['me'].move;
+  //개선됨
+  let keys = [];
+  let keysWaitSec = { a: 1000, d: 1000, w: 2500 };
+  let keysRestart = [];
+  let keysWaiter = {};
+  let intervalLong = 0;
+
+  document.addEventListener('keydown', (e) => {
+    //기본추가지점
+    if (!keys.includes(e.key)) {
+      keys.push(e.key);
+    }
+
+    //단타입력지점
+    if (!Object.keys(keysWaiter).includes(e.key)) {
+      keysWaiter[e.key] = 1;
+      const k = e.key;
+      if (Eincludes(['E', 'e', 'Q', 'q', ' '], keys) && !waiter['me'].attack) {
+        weapAT('me', waiter['me'].attack, objI['me'].move, me);
+        setTimeout(() => {
+          if (!Eincludes(['a', 'A', 'd', 'D'], keys)) {
+            weapDirSet('me', objI['me'].move, -1);
+          }
+        }, 1600);
+      }
+      if (
+        Eincludes(['w', 'W', 'ArrowUP'], keys) &&
+        HTML('#ground').style.bottom == '0px'
+      ) {
+        점프('#ground', 10, ['4px', '4px'], -0.5);
+        점프('#meShow', 10, ['4px', '4px'], 1);
+      }
+
+      setTimeout(() => {
+        delete keysWaiter[k];
+      }, keysWaitSec[k] || 100);
+    }
+
+    //복합 인터버지점
+    if (
+      Eincludes(['a', 'A', 'd', 'D'], keys) &&
+      Object.values(objInterval['me']).every((i) => i === null)
+    ) {
+      intervalLong = time();
+      let count = 0;
+      HTML('#meShow img').style.animation = 'none';
+      objInterval['me']['move'] = setInterval(() => {
+        이동값.x = 0;
+        이동값.y = 0;
+        if (Eincludes(['a', 'A', 'ArrowLeft'], keys)) {
+          이동값.x -= objI['me'].speed;
+          HTML('#meShow img').style.transform = 'scaleX(1)';
+        }
+        if (Eincludes(['d', 'D', 'ArrowRight'], keys)) {
+          이동값.x += objI['me'].speed;
+          HTML('#meShow img').style.transform = 'scaleX(-1)';
+        }
+        if (
+          Eincludes(['S', 's'], keys) &&
+          objI['me'].mana > 0 &&
+          !waiter['me'].speed &&
+          Math.abs(이동값.x) > 0
+        ) {
+          waiter['me'].speed = true;
+          for (let i = 0; i < 5; i++) {
+            setTimeout(() => {
+              불꽃({
+                x:
+                  parseInt(HTC('#me', 'left')) -
+                  parseInt(HTC(`#mover`, 'left')) +
+                  랜덤(-50, 50),
+                y:
+                  -parseInt(HTC('#ground', 'bottom')) * 1.5 +
+                  60 +
+                  랜덤(-60, -20),
+              });
+            }, (i - 1) * 40);
+          }
+          objI['me'].speed += 100;
+          objI['me'].mana -= 5;
+          setTimeout(() => {
+            objI['me'].speed -= 100;
+            Bar();
+            setTimeout(() => {
+              waiter['me'].speed = false;
+            }, 800);
+          }, 100);
+        }
+        objI['me'].dir = Math.sign(이동값.x);
+        HTML('#meSHow img').style.setProperty('--scaleX', `${-objI['me'].dir}`);
+        이동('#mover', -이동값.x, 이동값.y);
+      }, 45);
+      objInterval['me']['move_weap'] = setInterval(() => {
+        if (!waiter['me'].attack) {
+          if (HTML('.weap').style.transform.includes(`${50 * 0.8}`)) {
+            HTML('.weap').style.transform = HTML('.weap')
+              .style.transform.replace(`${50 * 0.8}`, `${60 * 0.8}`)
+              .replace('-20', '-15');
+          } else {
+            if (
+              !waiter['me'].attack &&
+              !HTML('#meWeap').style.transform.includes(
+                `(${50 * (이동값.x / Math.abs(이동값.x))}deg`
+              )
+            ) {
+              weapDirSet('me', objI['me'].move, 1, 0.8);
+            }
+          }
+        }
+      }, 270);
+      objInterval['me']['move_img'] = setInterval(() => {
+        if (HTML('#ground').style.bottom == '0px') {
+          count = count + 2 > img.playerMove.length ? 0 : count + 1;
+          HTML('#meShow img').src = img.playerMove[count];
+        } else {
+          HTML('#meShow img').src = img.playerMove[1];
+        }
+        return;
+        if (입력.length == 0) {
+          setTimeout(() => {
+            return;
+          }, 100);
+        }
+      }, 120);
+    }
+  });
+
+  document.addEventListener('keyup', (e) => {
+    //기본제거지점
+    if (keys.includes(e.key)) {
+      keys.splice(keys.indexOf(e.key), 1);
+    }
+
+    //단타처리지점
+    if (
+      Object.keys(keysWaiter).includes(e.key) &&
+      keysRestart.includes(e.key)
+    ) {
+      delete keysWaiter[e.key];
+    }
+
+    //복합인터버제거지점
+    if (
+      !Eincludes(['a', 'd'], keys) &&
+      !Object.values(objInterval['me']).every((i) => i === null)
+    ) {
+      //인터버취소지점
+      intervalLong = time() - intervalLong;
+      for (var i = 0; i < Object.keys(objInterval['me']).length; i++) {
+        clearInterval(objInterval['me'][Object.keys(objInterval['me'])[i]]);
+        objInterval['me'][Object.keys(objInterval['me'])[i]] = null;
+      }
+
+      //이후정리지점
+      if (!waiter['me'].attack) {
+        weapDirSet('me', objI['me'].move, -1);
+      }
+      if (intervalLong > 1) {
+        HTML('#meShow img').style.animation = 'smallJ 1s ease';
+        setTimeout(() => {
+          //오류1
+          HTML('#meShow img').style.animation = 'alive 5s ease infinite';
+        }, 1100);
+      }
+      HTML('#meShow img').src = img.playerMove[0];
+    }
+  });
+</script>
+
+<!--렌더링 전용 함수-->
+<script>
+  function Bar() {
+    Object.keys(objI).forEach((key) => {
+      HTML(`#${key}Mana`).value = objI[key].mana;
+      HTML(`#${key}Hp`).value = objI[key].hp;
+      if(objI[key].hp<=0 && !HTML('#'+key).style.animation.includes('죽음')){
+        console.log('즉음 : ',key)
+        HTML(`#${key}`).style.animation = `죽음${HTML('#'+key).getBoundingClientRect().left>HTML('#me').getBoundingClientRect().left?'r':'l'} 0.5s cubic-bezier(0.2, 0.0, 0.6, 1.0) forwards`;
+      inFight.splice(inFight.indexOf(key),1);console.log(inFight,'사망제거방식')}
+    });
+  }
+
+  Bar();
+  //캐릭터 무기 위치
+  function weapDirSet(who, where, bias, angleBias) {
+    if (bias == undefined) {
+      bias = 1;
+    }
+    if (angleBias == undefined) {
+      angleBias = 1;
+    }
+    let 이동값 = where;
+    let dir = bias * objI[who].dir;
+    dir = dir == 0 ? 1 : dir;
+    HTML(`#${who}Weap`).style.left = `${168 + 60 * dir}px`;
+    HTML(`#${who}Weap`).style.transform = `translate(-70px,-40px) rotate(${
+      50 * dir * angleBias
+    }deg) scaleX(${dir})`;
+  }
+
+  //무기 때리기 모션 1
+  function weapAT(who, Waiter, where, test) {
+    if (waiter[who].attack) {
+      return;
+    }
+    weapDirSet('me', objI['me'].move, 1);
+    //HTML('.weap #o1').style.bottom=`${parseInt(HTML('.weap #o1').style.bottom)+15}px`
+    waiter[who].attack = true;
+    const w = HTML(`#${who}Weap`);
+    w.style.transition = 'all 0.5s ease';
+    w.style.transform = w.style.transform.replace('50deg', '2deg');
+    w.style.transform = w.style.transform.replace(-40, -80);
+    setTimeout(() => {
+      w.style.transition = 'all 0.1s ease';
+      w.style.transform = w.style.transform.replace('2deg', '150deg');
+      w.style.transform = w.style.transform.replace(-80, 50);
+      let touchAFFC = 0;
+      let touchCheack = setInterval(() => {
+        touchAFFC++;
+        Object.keys(obj.enemy).forEach((o) => {
+          if (o) {if(true){
+            if (터치(`#${o}`, '#meWeap')&&objI[o].hp>0) {
+              HTML(`#${o}HP`).style.opacity = 0.8;
+              HTML(`#${o}MANA`).style.opacity = 0.8;
+              if(true){
+              setTimeout(() => {
+                HTML(`#${o}HP`).style.opacity = 0;
+                HTML(`#${o}MANA`).style.opacity = 0;
+              }, 700);
+              objI[o].hp -= objI[who].ap / 2;
+              if (objI[who].mana !== 100) {
+                objI[who].mana += 1;
+              }}
+              Bar();
+              setTimeout(() => {
+                딜량(
+                  {
+                    x:
+                      parseInt(HTC(`#${o}`, 'left')) +
+                      parseInt(HTC(`#${o}`, 'width')) / 2 +
+                      랜덤(
+                        -parseInt(HTC(`#${o}`, 'width')) / 2,
+                        parseInt(HTC(`#${o}`, 'width')) / 2
+                      ),
+                    y:
+                      -parseInt(HTC('#ground', 'bottom')) +
+                      랜덤(
+                        -parseInt(HTC(`#${o}`, 'height')) / 4,
+                        parseInt(HTC(`#${o}`, 'height')) / 2 + 20
+                      ),
+                  },
+                  objI[who].ap / 2,
+                  1,
+                  '#onground'
+                );
+              }, 50 * touchAFFC);
+            }
+          }}
+        });
+      }, 60);
+      setTimeout(() => {
+        clearInterval(touchCheack);
+      }, 200);
+      if (parseInt(HTML('#ground').style.bottom) > -40) {
+        setTimeout(() => {
+          for (var i = 0; i < 4; i++) {
+            불똥({
+              x:
+                HTML('#meWeap').getBoundingClientRect().left -
+                parseInt(HTC('#mover', 'left')) +
+                (1 +
+                  (objI[who].move.x == 0
+                    ? 0
+                    : objI[who].move.x / Math.abs(objI[who].move.x))) *
+                  40 +
+                랜덤(-1, 1),
+              y: -parseInt(HTC('#ground', 'bottom')) - 25,
+            });
+          }
+        }, 200);
+      }
+    }, 500);
+    setTimeout(() => {
+      w.style.transition = 'all 0.5s ease';
+      w.style.transform = w.style.transform.replace('150deg', '50deg');
+      w.style.transform = w.style.transform.replace(50, -20);
+      weapDirSet('me', objI['me'].move, 1, 0.8);
+      setTimeout(() => {
+        waiter[who].attack = false;
+      }, 500);
+    }, 1100);
+  }
+</script>
+
+<!--효과-->
+<script>
+  let 불꽃카운터 = 0;
+  function 불꽃(위치) {
+    setTimeout(() => {
+      불꽃카운터++;
+      const 임시카운터 = 불꽃카운터;
+      const 불꽃 = document.createElement('div');
+      불꽃.id = `불꽃${불꽃카운터}`;
+      불꽃.style.left = `${위치.x}px`;
+      불꽃.style.bottom = `${위치.y}px`;
+      const 랜덤색상 =
+        랜덤(1, 2) == 1 ? '#FF5A47' : 랜덤(1, 2) ? '#FF662A' : '#FF8E61';
+      불꽃.style.border = '2px solid ' + 랜덤색상;
+      불꽃.className = `불꽃`;
+      HTML('#onground').appendChild(불꽃);
+
+      setTimeout(() => {
+        const 불꽃요소 = HTML(`#불꽃${임시카운터}`);
+        if (불꽃요소) {
+          불꽃요소.style.opacity = 0;
+          불꽃요소.remove();
+        }
+      }, 1000);
+    }, 150);
+  }
+
+  const 불꽃인터버 = {};
+
+  function 불똥(위치) {
+    불꽃카운터++;
+    const 임시카운터 = 불꽃카운터;
+    let 각도 = 랜덤(0, 180) - 90;
+    const 불꽃 = document.createElement('div');
+    불꽃.id = `불꽃${임시카운터}`;
+    불꽃.className = '불꽃 불똥';
+    불꽃.style.left = `${위치.x}px`;
+    불꽃.style.bottom = `${위치.y}px`;
+    불꽃.style.transform = `rotate(${각도}deg)`;
+    HTML('#onground').appendChild(불꽃);
+
+    불꽃인터버[임시카운터] = setInterval(() => {
+      방향이동(`#불꽃${임시카운터}`, 각도, 10);
+    }, 100);
+
+    setTimeout(() => {
+      clearInterval(불꽃인터버[임시카운터]);
+      delete 불꽃인터버[임시카운터];
+      const 불꽃요소 = HTML(`#불꽃${임시카운터}`);
+      불꽃요소.style.display = 'none';
+      불꽃요소.remove();
+    }, 490);
+  }
+
+  let ATcCount = 0;
+
+  function 딜량(xy, d, t, w) {
+    ATcCount++;
+    let safeC = ATcCount;
+    const div = document.createElement('div');
+    div.className = '딜량';
+    div.id = `ATC${ATcCount}`;
+    div.style.left = `${xy.x}px`;
+    div.style.bottom = `${xy.y}px`;
+    div.innerHTML = `${d}`;
+    HTML(w).appendChild(div);
+    setTimeout(() => {
+      HTML(`#ATC${safeC}`).remove();
+    }, 1100);
+  }
+</script>
+
+<!--인너페이스-->
+<script>
+//인벤토리
+const itemDict = 
+{
+'살벌한 단소': {
+  tag : '신화',
+  type : 1,
+  ap : 55,
+  about : ['지하철바닥에 굴러다니는 수상한 단소.','끝부분이 조금 찌그러졌다.'],
+  img : 'https://i.ifh.cc/5az482.png',
+},
+'불로초': {
+  tag : '일반',
+  type : 1,
+  ap : 0,
+  hp : 15,
+  about : ['불로초.','이곳은 시간이 거꾸로 흘러 의미가 없다.'],
+  img : null,
+},
+}
+
+const inventoryType = ['소모아이템','보유아이템','한손무기','양손무기']
+
+function $ntn(n){
+  return Object.keys(itemDict)[n]
+}
+
+let inventory = [[$ntn(0),'불로초'],[1,1]]
+let inventoryLookingInNum = 0;
+
+function inventoryMove(n){
+  inventoryLookingInNum += n
+  inventoryLookingInNum = Math.min(inventoryLookingInNum, inventory[0].length - 1);
+  inventoryLookingInNum = Math.max(inventoryLookingInNum, 0);
+  console.log(inventoryLookingInNum)
+  inventoryRender()
+  console.log(inventoryLookingInNum)
+}
+function inventoryRender(){
+  let num = inventoryLookingInNum
+  let target = inventory[0][inventoryLookingInNum]
+  console.log(target);
+  if(!isNaN(target)){target = $ntn(target)}
+  HTML('#inventory_name').innerText = `${target}` 
+  HTML('#inventory_tag').innerHTML = `[${itemDict[target].tag}]`
+  HTML('#inventory_type').innerHTML = inventoryType[itemDict[target].type]
+  HTML('#inventory_img').src = itemDict[target].img
+  HTML('#inventory_about1').innerText = itemDict[target].about[0]
+  HTML('#inventory_about2').innerText = itemDict[target].about[1]
+}
+
+inventoryRender();
+</script>
+
+<!--적 ai 관리-->
+<script>
+const inFight = ['test1','test2','test3']
+const enemyInterval = setInterval (()=>{
+for(var i = 0;i<Object.keys(objI);i++){
+  const target = HTML(`#${Object.keys(objI)[i]}`)
+  const have = inFight.includes(target)
+  const dist = Math.abs(target.getBoundingClientRect().left-HTML('#me').getBoundingClientRect().left)<400
+  if(dist&&!have){inFight.push(target)}
+  if(!dist && have){inFight.splice(inFight.indexOf(target),1);}
+  console.log(inFight)
+  //in have -> x
+  //in !have -> o 1
+  //!in have -> o
+  //!in !have -> x
+}
+const dir = 랜덤(0,1)
+for (var j = 0; j<inFight.length;j++){
+  const target = HTML(`#${inFight[j]}`);
+  const targetB = target.style.bottom;
+  const $tgx = target.getBoundingClientRect().left;
+  const dist = $tgx-HTML('#me').getBoundingClientRect();
+  const $ogl = HTML('#mover').getBoundingClientRect().left;
+  let fixedJ = j;
+  let toX = 0;
+  if(true){
+    toX = (parseInt(HTML('body').getBoundingClientRect().width)/4.5)-$ogl-140*(fixedJ-1);
+  }
+  if(랜덤(1,2)==1&&j==0){
+    toX = (parseInt(HTML('body').getBoundingClientRect().width)/2)-$ogl+100;
+  }
+  else if(j==0){toX = (parseInt(HTML('body').getBoundingClientRect().width)/2)-$ogl+300;}
+  setTimeout(()=>{ 
+  순간이동(`#${inFight[fixedJ]}`, toX , HTML(`#${inFight[fixedJ]}`) )},200*fixedJ)
+}
+},1000)
+
+</script>

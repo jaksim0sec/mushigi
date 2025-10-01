@@ -1,0 +1,71 @@
+<script>
+function Eincludes(list, who) {
+    return list.some((key) => who.includes(key));
+  }
+function time() { 
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = d.getMonth() + 1;
+  const day = d.getDate();
+  const h = d.getHours();
+  const min = d.getMinutes();
+  const s = d.getSeconds();
+
+  return Number(
+    `${y}${String(m).padStart(2, '0')}${String(day).padStart(2, '0')}${String(h).padStart(2, '0')}${String(min).padStart(2, '0')}${String(s).padStart(2, '0')}`
+  );
+}
+
+keys = []
+keysWaitSec = {a:1000,d:1000,}
+keysWaiter = {}
+intervalLong = 0;
+
+document.addEventListener('keydown', (e) => {
+//기본추가지점
+if(!keys.includes(e.key)){keys.push(e.key);}
+
+//단타입력지점
+if(!Object.keys(keysWaiter).includes(e.key)){
+  keysWaiter[e.key] = 1;
+  const k = e.key;
+  if(k == 'd'){}
+  setTimeout(()=>{delete keysWaiter[k]},keysWaitSec[k]||100)
+}
+
+//복합 인터버지점
+if(Eincludes(['a','A','d','D','w','W'],keys)&&Object.values(objInterval['me']).every(i => i === null)){
+  intervalLong = time();
+  objInterval['me']['move'] = setInterval(()=>{
+    //console.log('move')
+  },45)
+  objInterval['me']['move_weap'] = setInterval(()=>{
+    //console.log('move_weap')
+  },270)
+  objInterval['me']['move_img'] = setInterval(()=>{
+    //console.log('move_img')
+  },120)
+}
+})
+
+document.addEventListener('keyup', (e) => {
+
+//기본제거지점
+if(keys.includes(e.key)){keys.splice(keys.indexOf(e.key),1);}
+
+//단타처리지점
+if(Object.keys(keysWaiter).includes(e.key)){delete keysWaiter[e.key]}
+
+//복합인터버제거지점
+if(!Eincludes(['a','d'],keys)&&!Object.values(objInterval['me']).every(i => i === null)){
+  //인터버취소지점
+  intervalLong = time()-intervalLong
+  for (var i = 0; i < Object.keys(objInterval['me']).length; i++) {
+      clearInterval(objInterval['me'][Object.keys(objInterval['me'])[i]]);
+      objInterval['me'][Object.keys(objInterval['me'])[i]] = null;
+  }
+
+  //이후정리지점
+}
+})
+</script>
