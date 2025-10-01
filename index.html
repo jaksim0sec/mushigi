@@ -339,6 +339,7 @@
   <!--애니메이션-->
   <style>
     /*적용*/
+    #mover{left:500px}
     #mover div img {
       animation: backgroundS 5s ease infinite;
     }
@@ -480,21 +481,16 @@
       font-weight: bold;
       animation: 딜량 1s ease forwards;
       animation-delay: 0.1s;
-      background: linear-gradient(180deg, white, darkgrey);
+      background: linear-gradient(180deg, red, orange);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       position: absolute;
     }
 
-    .딜량 {
-      font-size: 30px;
-      font-weight: bold;
-      animation: 딜량 1s ease forwards;
-      animation-delay: 0.1s;
+    .적딜량 {
       background: linear-gradient(180deg, white, darkgrey);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
-      position: absolute;
     }
 
     @keyframes 불꽃 {
@@ -545,7 +541,7 @@
 <body>
   <div id="world">
     <div id="ground" style="width: 100%; position: absolute; bottom: 0px; height: 250px;">
-      <div id="mover" style="height: 55vh; position: absolute; left: 200px; bottom: 250px;">
+      <div id="mover" style="height: 55vh; position: absolute; left: -2000px; bottom: 250px;">
         
         <!-- 뒷배경 -->
         <div style="height: 100%; display: flex;">
@@ -904,6 +900,7 @@
       test3: HTML('#test3')
     },
   };
+  isJump = false
   const objI = {
     me: {
       mana: 100,
@@ -973,6 +970,7 @@
   let intervalLong = 0;
 
   document.addEventListener('keydown', (e) => {
+    if(objI.me.hp<=0)return
     //기본추가지점
     if (!keys.includes(e.key)) {
       keys.push(e.key);
@@ -982,7 +980,7 @@
     if (!Object.keys(keysWaiter).includes(e.key)) {
       keysWaiter[e.key] = 1;
       const k = e.key;
-      if (Eincludes(['E', 'e', 'Q', 'q', ' '], keys) && !waiter['me'].attack) {
+      if (Eincludes(['E', 'e', 'Q', 'q', ' '], keys) && !waiter['me'].attack && objI.me.hp>0) {
         weapAT('me', waiter['me'].attack, objI['me'].move, me);
         setTimeout(() => {
           if (!Eincludes(['a', 'A', 'd', 'D'], keys)) {
@@ -992,10 +990,12 @@
       }
       if (
         Eincludes(['w', 'W', 'ArrowUP'], keys) &&
-        HTML('#ground').style.bottom == '0px'
+        HTML('#ground').style.bottom == '0px' && !isJump
       ) {
-        점프('#ground', 10, ['4px', '4px'], -0.5);
-        점프('#meShow', 10, ['4px', '4px'], 1);
+        isJump = true
+        점프('#ground', 9, ['4px', '4px'], -1.5);
+        점프('#meShow', 4, ['4px', '4px'], 0.4);
+        setTimeout(()=>{isJump = false},500)
       }
 
       setTimeout(() => {
@@ -1088,7 +1088,7 @@
             return;
           }, 100);
         }
-      }, 120);
+      }, 100);
     }
   });
 
@@ -1142,7 +1142,11 @@
       HTML(`#${key}Hp`).value = objI[key].hp;
       if(objI[key].hp<=0 && !HTML('#'+key).style.animation.includes('죽음')){
         console.log('즉음 : ',key)
-        HTML(`#${key}`).style.animation = `죽음${HTML('#'+key).getBoundingClientRect().left>HTML('#me').getBoundingClientRect().left?'r':'l'} 0.5s cubic-bezier(0.2, 0.0, 0.6, 1.0) forwards`;
+        HTML(`#${key}`).style.animation = `죽음${key!=='me'?HTML('#'+key).getBoundingClientRect().left>HTML('#me').getBoundingClientRect().left?'r':'l':objI.me.dir==-1?'r':'l'} 0.5s cubic-bezier(0.2, 0.0, 0.6, 1.0) forwards`;
+        if(key=='me'){
+          HTML('#me').style.bottom = parseInt(getComputedStyle(HTML('#me')).bottom)-20+'px';
+          setInterval(()=>{HTML('#me .weap').style.setProperty('transform',HTML('#me .weap').style.transform.replace('50','10').replace('-70','-20'),'important')},100)
+        }
       inFight.splice(inFight.indexOf(key),1);console.log(inFight,'사망제거방식')}
     });
   }
@@ -1217,7 +1221,7 @@
                       ),
                   },
                   objI[who].ap / 2,
-                  1,
+                  false,
                   '#onground'
                 );
               }, 50 * touchAFFC);
@@ -1315,7 +1319,7 @@
 
   let ATcCount = 0;
 
-  function 딜량(xy, d, t, w) {
+  function 딜량(xy, d, t=false, w) {
     ATcCount++;
     let safeC = ATcCount;
     const div = document.createElement('div');
@@ -1324,6 +1328,7 @@
     div.style.left = `${xy.x}px`;
     div.style.bottom = `${xy.y}px`;
     div.innerHTML = `${d}`;
+    if(t)div.classList.add('적딜량');
     HTML(w).appendChild(div);
     setTimeout(() => {
       HTML(`#ATC${safeC}`).remove();
@@ -1336,7 +1341,7 @@
 //인벤토리
 const itemDict = 
 {
-'살벌한 단소': {
+'불길한 단소': {
   tag : '신화',
   type : 1,
   ap : 55,
@@ -1409,17 +1414,47 @@ for (var j = 0; j<inFight.length;j++){
   const $tgx = target.getBoundingClientRect().left;
   const dist = $tgx-HTML('#me').getBoundingClientRect();
   const $ogl = HTML('#mover').getBoundingClientRect().left;
+  let touchCheckInterval = undefined
+
   let fixedJ = j;
   let toX = 0;
   if(true){
     toX = (parseInt(HTML('body').getBoundingClientRect().width)/4.5)-$ogl-140*(fixedJ-1);
   }
   if(랜덤(1,2)==1&&j==0){
-    toX = (parseInt(HTML('body').getBoundingClientRect().width)/2)-$ogl+100;
+    toX = (parseInt(HTML('body').getBoundingClientRect().width)/2)-$ogl+10;
   }
   else if(j==0){toX = (parseInt(HTML('body').getBoundingClientRect().width)/2)-$ogl+300;}
+  if(j==0){
+    touchCheckInterval = setInterval(() => {
+        if (터치(`#${inFight[fixedJ]}`, '#me')) {
+
+          const 딜 = objI[inFight[fixedJ]].ap||10;
+          const 나눔 = 랜덤(1, 4);
+
+          for (let i = 0; i < 나눔; i++) {
+            setTimeout(() => {
+              objI.me.hp-=Math.floor(딜 / 나눔);
+              Bar()
+              딜량(
+                {
+                  x: HTML('body').getBoundingClientRect().width / 2 + 랜덤(-30, 80),
+                  y: HTML('#ground').getBoundingClientRect().height + 랜덤(-50, 100)
+                },
+                Math.floor(딜 / 나눔),
+                3,
+                '#ground'
+              );
+            }, 100 * i);
+          }
+
+        }
+    }, 500);
+  }
   setTimeout(()=>{ 
-  순간이동(`#${inFight[fixedJ]}`, toX , HTML(`#${inFight[fixedJ]}`) )},200*fixedJ)
+  순간이동(`#${inFight[fixedJ]}`, toX , HTML(`#${inFight[fixedJ]}`) )},200*fixedJ);
+  if(isVal(touchCheckInterval))setTimeout(()=>{clearInterval(touchCheckInterval)},1000)
+  
 }
 },1000)
 
